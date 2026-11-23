@@ -1,0 +1,44 @@
+#
+# Common disallows for each technology
+# Some repeated folders are ignored as rules follow each other
+#
+
+# PHP disallows
+User-agent: *
+Disallow: /config/
+Disallow: /includes/
+Disallow: /admin/
+Disallow: /cache/
+Disallow: /private/
+Disallow: /logs/
+# Node.JS disallows
+Disallow: /node_modules/
+Disallow: /database/
+Disallow: /bin/
+# HTML disallows
+Disallow: /assets/
+Disallow: /scripts/
+Disallow: /styles/
+Disallow: /backup/
+Disallow: /temp/
+# Wordpress core files disallows
+Disallow: /wp-admin/
+Disallow: /wp-includes/
+Disallow: /wp-content/plugins/
+Disallow: /wp-content/cache/
+Disallow: /cgi-bin/
+
+#
+# Bot agents management
+#
+
+# Amazonbot is insane
+User-agent: Amazonbot
+Disallow: /
+
+User-agent: BDCbot
+Disallow: /
+
+User-agent: SeekportBot
+Disallow: /
+

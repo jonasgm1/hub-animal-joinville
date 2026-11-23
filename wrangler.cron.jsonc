@@ -1,0 +1,19 @@
+{
+  // Worker sem rota pública: só executa a coleta e a manutenção (Pages não tem Cron Triggers).
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "hubanimaljoinville-coleta",
+  "main": "dist/_worker.js",
+  "compatibility_date": "2026-11-20",
+  "workers_dev": false,
+  "preview_urls": false,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hubanimaljoinville",
+      "database_id": "a0b59f9f-bc7d-46eb-8a5c-2263bdaa660a",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "triggers": { "crons": ["17 9,21 * * *"] },
+  "observability": { "enabled": true }
+}

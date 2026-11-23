@@ -1,0 +1,19 @@
+{
+  // Cloudflare Pages (site + painel). A coleta agendada roda no Worker de wrangler.cron.jsonc.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "hubanimaljoinville",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-11-20",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hubanimaljoinville",
+      "database_id": "a0b59f9f-bc7d-46eb-8a5c-2263bdaa660a",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    "PUBLIC_ORIGIN": "https://hubanimaljoinville.pages.dev",
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAGPgqSJcyT0P9EXA"
+  }
+}

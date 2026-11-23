@@ -1,0 +1,361 @@
+{
+  "services": [
+    {
+      "slug": "castracao",
+      "title": "Castração de cães e gatos",
+      "description": "Peça autorização à Prefeitura antes de marcar a cirurgia em uma clínica credenciada.",
+      "category": "Castração",
+      "species": [
+        "Cães",
+        "Gatos"
+      ],
+      "cost": "criterios",
+      "audience": "Tutores",
+      "eligibility": "Há três formas de acesso. A Prefeitura atende tutores com CadÚnico ativo, animais adotados do Município ou de ONGs e demais tutores. O terceiro grupo tem limite de 5% das cirurgias credenciadas no ano.",
+      "steps": "Envie os comprovantes pelo WhatsApp do programa. Aguarde a autorização e então agende com uma clínica credenciada.",
+      "verifiedAt": "2026-11-20",
+      "organization": "cbea",
+      "sourceUrl": "https://www.joinville.sc.gov.br/servicos/requerer-castracao-de-animal-domestico/",
+      "hours": "Envio a qualquer hora. Respostas de segunda a sexta, das 8h às 18h, exceto feriados e pontos facultativos.",
+      "whatsapp": "(47) 98880-1911",
+      "documents": "CadÚnico ativo: número de inscrição e CPF. Animal adotado do Município ou ONG: comprovante de adoção. Demais tutores: atestado veterinário com até 15 dias e identificação do animal, número do microchip e carteira de vacinação e vermifugação atualizada."
+    },
+    {
+      "slug": "socorro-animal-de-rua",
+      "title": "Socorro a animal de rua doente ou ferido",
+      "description": "Quem encontrar um animal doméstico sem tutor pode solicitar resgate e atendimento veterinário municipal. O acolhimento depende da capacidade do CBEA.",
+      "category": "Resgate de animais",
+      "species": [
+        "Cães",
+        "Gatos"
+      ],
+      "cost": "disponibilidade",
+      "audience": "Qualquer pessoa",
+      "eligibility": "Para animal doméstico sem tutor que esteja doente ou ferido em Joinville.",
+      "steps": "Informe a situação e a localização exata. Para um animal ferido com risco de morte, use o contato de emergência no horário indicado. Fora dele, ligue para o plantão. Para as demais solicitações, use a Ouvidoria.",
+      "verifiedAt": "2026-11-20",
+      "organization": "cbea",
+      "sourceUrl": "https://www.joinville.sc.gov.br/servicos/solicitar-socorro-a-animal-domestico-de-rua-doente-ou-ferido/",
+      "phone": "(47) 3425-0827",
+      "whatsapp": "(47) 3425-0827",
+      "hours": "Emergência: (47) 3425-0827 em dias úteis, 7h–19h. Plantão por ligação: (47) 3417-3554 de segunda a sexta, 19h–7h, e 24h nos fins de semana, feriados e pontos facultativos. Ouvidoria online 24h ou 156 em dias úteis, 8h–14h.",
+      "documents": "Informe rua, número, bairro, referência e estado do animal.",
+      "website": "https://ouvidoria-form.joinville.sc.gov.br/"
+    },
+    {
+      "slug": "denunciar-maus-tratos",
+      "title": "Denúncia de maus-tratos",
+      "description": "Encaminhe suspeitas de maus-tratos a cães, gatos ou equídeos à fiscalização municipal.",
+      "category": "Denúncias de maus-tratos",
+      "species": [
+        "Cães",
+        "Gatos",
+        "Equídeos"
+      ],
+      "cost": "aberto",
+      "audience": "Qualquer pessoa",
+      "eligibility": "Qualquer pessoa pode comunicar uma ocorrência em Joinville.",
+      "steps": "Use o canal da Ouvidoria indicado na carta de serviço. Informe localização e descreva o que ocorreu. Acompanhe a tramitação no canal oficial.",
+      "verifiedAt": "2026-11-20",
+      "organization": "fiscalizacao",
+      "sourceUrl": "https://www.joinville.sc.gov.br/servicos/denunciar-maus-tratos-a-animais/",
+      "documents": "Rua, número do imóvel ou de um vizinho, bairro, ponto de referência e descrição da ocorrência.",
+      "website": "https://www.joinville.sc.gov.br/servicos/registrar-manifestacao-a-ouvidoria/"
+    },
+    {
+      "slug": "adotar-no-cbea",
+      "title": "Adoção de cães e gatos no CBEA",
+      "description": "Conheça os animais acolhidos pelo Centro de Bem-estar Animal e solicite uma adoção pelo Joinville Fácil ou presencialmente.",
+      "category": "Adoção",
+      "species": [
+        "Cães",
+        "Gatos"
+      ],
+      "cost": "aberto",
+      "audience": "Adotantes",
+      "eligibility": "A carta municipal indica pessoas acima de 18 anos. A entrega do animal depende de alta veterinária, vacinação, castração e microchipagem.",
+      "steps": "Escolha o animal na feira virtual, entre com sua conta gov.br e registre o interesse. Aguarde a equipe. Para adoção presencial, leve os documentos e assine o termo de tutela.",
+      "verifiedAt": "2026-11-20",
+      "organization": "cbea",
+      "sourceUrl": "https://www.joinville.sc.gov.br/servicos/adotar-animal-domestico-sem-tutor/",
+      "address": "Estrada Blumenau, km 11, s/nº, Vila Nova, Joinville/SC",
+      "hours": "Feira virtual disponível 24h. Atendimento presencial todos os dias, das 10h às 16h.",
+      "documents": "No atendimento presencial: documento com foto, CPF e comprovante de residência atualizado.",
+      "website": "https://facil.joinville.sc.gov.br/feiraVirtualAdoteUmAmigo"
+    },
+    {
+      "slug": "socorro-animal-silvestre",
+      "title": "Socorro a animal silvestre",
+      "description": "Peça orientação ao IMA para um animal silvestre perdido, doente, ferido ou para um filhote encontrado sem os pais em Joinville.",
+      "category": "Animais silvestres",
+      "species": [
+        "Silvestres"
+      ],
+      "cost": "aberto",
+      "audience": "Qualquer pessoa",
+      "eligibility": "Qualquer pessoa que encontre um animal nas condições descritas no município.",
+      "steps": "Descreva a situação e a localização ao IMA por mensagem de texto. A carta indica o 190 para extrema urgência e fora do horário comercial. Para outras situações, consulte o IMA pelo e-mail indicado.",
+      "verifiedAt": "2026-11-20",
+      "organization": "gestao-ambiental",
+      "sourceUrl": "https://www.joinville.sc.gov.br/servicos/solicitar-socorro-a-animal-silvestre-doente-ou-ferido/",
+      "whatsapp": "(48) 98808-3372",
+      "hours": "IMA por mensagem de texto: segunda a sexta, 13h–17h. O 190 tem plantão 24h.",
+      "email": "gbio@ima.sc.gov.br",
+      "documents": "Nome e CPF para identificação no canal oficial. Informe rua, número, bairro e referência. Se possível, inclua foto."
+    },
+    {
+      "slug": "cadastro-de-protetores",
+      "title": "Cadastro de protetor independente",
+      "description": "O cadastro municipal vale um ano. Ele permite participar de programas de vacinação, castração e microchipagem conforme a oferta de vagas.",
+      "category": "Apoio a protetores",
+      "species": [
+        "Cães",
+        "Gatos"
+      ],
+      "cost": "criterios",
+      "audience": "Protetores independentes",
+      "eligibility": "Para protetores individuais de Joinville que mantêm animais com recursos próprios e desenvolvem trabalho voluntário de proteção.",
+      "steps": "Preencha o formulário na carta de serviço e anexe os documentos. O CBEA visita o endereço informado para conferir os animais.",
+      "verifiedAt": "2026-11-20",
+      "organization": "cbea",
+      "sourceUrl": "https://www.joinville.sc.gov.br/servicos/efetuar-cadastro-de-protetores-independentes-de-animais/",
+      "hours": "Formulário online disponível 24h.",
+      "documents": "Identificação, contatos, comprovante de residência com até 90 dias, endereço de manutenção dos animais, modelo do termo de adoção e listas individualizadas dos animais sob tutela e disponíveis para adoção. Veja a lista completa na fonte."
+    },
+    {
+      "slug": "lar-temporario",
+      "title": "Oferecer lar temporário",
+      "description": "Receba em casa um animal acolhido pelo CBEA enquanto ele aguarda adoção. O centro orienta sobre o tratamento ainda necessário.",
+      "category": "Voluntariado",
+      "species": [
+        "Cães",
+        "Gatos"
+      ],
+      "cost": "aberto",
+      "audience": "Voluntários",
+      "eligibility": "Pessoas acima de 18 anos que residem em Joinville ou entidades sem fins lucrativos localizadas na cidade.",
+      "steps": "Preencha o formulário oficial ou vá ao CBEA. Aguarde a avaliação e as instruções para assinar o termo de tutela e buscar o animal.",
+      "verifiedAt": "2026-11-20",
+      "organization": "cbea",
+      "sourceUrl": "https://www.joinville.sc.gov.br/servicos/cadastrar-se-para-oferecer-lar-temporario-a-animal-domestico/",
+      "address": "Estrada Blumenau, km 11, s/nº, Vila Nova, Joinville/SC",
+      "hours": "Formulário 24h. Presencial de segunda a sexta, das 7h às 19h, exceto feriados e pontos facultativos.",
+      "documents": "Para atendimento presencial: documento com foto, CPF e comprovante de residência atualizado.",
+      "website": "https://docs.google.com/forms/d/e/1FAIpQLScemdktLOlqx5iFWe0Q9INggz8eYSW2leJzeMUF4zXb4sOw5g/viewform"
+    },
+    {
+      "slug": "animal-desaparecido",
+      "title": "Divulgar animal desaparecido",
+      "description": "O mural do Joinville Fácil ajuda a localizar animais perdidos. O CBEA avalia cada anúncio antes de liberá-lo por até 30 dias.",
+      "category": "Animais desaparecidos",
+      "species": [
+        "Cães",
+        "Gatos"
+      ],
+      "cost": "incerto",
+      "audience": "Tutores",
+      "eligibility": "Tutores podem registrar o desaparecimento pelo Joinville Fácil. A publicação consultada não informa eventual custo.",
+      "steps": "Entre com gov.br e abra “Animal desaparecido”. Informe as características, o último local em que o animal foi visto e um telefone de contato. Anexe foto apenas do animal. Atualize o anúncio quando reencontrá-lo.",
+      "verifiedAt": "2026-11-20",
+      "organization": "cbea",
+      "sourceUrl": "https://www.joinville.sc.gov.br/noticias/aplicativo-joinville-facil-ganha-ferramenta-para-cadastro-de-animais-desaparecidos/",
+      "website": "https://facil.joinville.sc.gov.br/"
+    },
+    {
+      "slug": "microchipagem",
+      "title": "Microchipagem de cães e gatos",
+      "description": "O chip identifica o tutor quando lido por um equipamento compatível. O procedimento municipal é gratuito e exige agendamento.",
+      "category": "Animais desaparecidos",
+      "species": [
+        "Cães",
+        "Gatos"
+      ],
+      "cost": "criterios",
+      "audience": "Tutores",
+      "eligibility": "Tutor residente em Joinville, com cão ou gato.",
+      "steps": "Envie os documentos ao WhatsApp e aguarde a marcação. No dia combinado, leve o animal e a documentação ao CBEA. Guarde o número do chip com a carteira do animal.",
+      "verifiedAt": "2026-11-20",
+      "organization": "cbea",
+      "sourceUrl": "https://www.joinville.sc.gov.br/servicos/requerer-microchipagem-de-animal-domestico/",
+      "whatsapp": "(47) 98880-1911",
+      "address": "Servidão Doutora Marina Gavioli, s/nº, Vila Nova, Joinville/SC",
+      "hours": "Envio a qualquer hora. Respostas de segunda a sexta, das 8h às 18h, exceto feriados e pontos facultativos.",
+      "documents": "CPF ou RG e comprovante de residência em nome do tutor."
+    },
+    {
+      "slug": "morcego-encontrado",
+      "title": "Orientação ao encontrar um morcego",
+      "description": "A Vigilância Ambiental orienta quem encontrou morcego caído, vivo ou morto, inclusive quando houve contato com um animal doméstico.",
+      "category": "Zoonoses",
+      "species": [
+        "Silvestres"
+      ],
+      "cost": "aberto",
+      "audience": "Qualquer pessoa",
+      "eligibility": "Qualquer pessoa em Joinville.",
+      "steps": "Evite contato direto e comunique a Vigilância Ambiental. Se uma pessoa teve contato com o morcego, siga a orientação de atendimento médico imediato da carta de serviço.",
+      "verifiedAt": "2026-11-20",
+      "organization": "vigilancia-ambiental",
+      "sourceUrl": "https://www.joinville.sc.gov.br/servicos/obter-orientacoes-sobre-manejo-de-morcegos/",
+      "phone": "(47) 98856-8046",
+      "whatsapp": "(47) 98856-8046",
+      "email": "notificazoonosesjlle@gmail.com",
+      "hours": "Ligações todos os dias, das 7h às 18h. WhatsApp disponível para envio 24h.",
+      "address": "Rua Aubé, 790, Boa Vista, Joinville/SC"
+    },
+    {
+      "slug": "esporotricose",
+      "title": "Orientação sobre esporotricose em animais",
+      "description": "Saiba como comunicar um caso suspeito à Vigilância Ambiental e consultar as condições para receber medicamento para o animal.",
+      "category": "Zoonoses",
+      "species": [
+        "Cães",
+        "Gatos"
+      ],
+      "cost": "criterios",
+      "audience": "Qualquer pessoa",
+      "eligibility": "Quem tem animal com suspeita da doença pode pedir orientação. Para tratamento domiciliar de animal com tutor, a Prefeitura exige prescrição médico-veterinária.",
+      "steps": "Para um animal com tutor, contate a Vigilância e procure atendimento veterinário. Para um animal de rua, registre o caso na Ouvidoria pelo link da carta de serviço.",
+      "verifiedAt": "2026-11-20",
+      "organization": "vigilancia-ambiental",
+      "sourceUrl": "https://www.joinville.sc.gov.br/servicos/obter-orientacoes-sobre-esporotricose-humana-e-animais-com-suspeita-da-doenca/",
+      "phone": "(47) 98856-8046",
+      "whatsapp": "(47) 98856-8046",
+      "email": "notificazoonosesjlle@gmail.com",
+      "hours": "Telefone e WhatsApp todos os dias, das 8h às 18h. Respostas por e-mail de segunda a sexta, 8h–18h, exceto feriados e pontos facultativos.",
+      "documents": "Prescrição veterinária para a solicitação de medicamento."
+    }
+  ],
+  "organizations": [
+    {
+      "slug": "cbea",
+      "title": "Centro de Bem-estar Animal",
+      "description": "O CBEA acolhe animais atendidos pelo município. A Unidade de Bem-estar e Proteção Animal faz sua gestão.",
+      "area": "Órgão municipal · Proteção animal e adoção",
+      "sourceUrl": "https://www.joinville.sc.gov.br/institucional/sama/ube/",
+      "verifiedAt": "2026-11-20",
+      "address": "Servidão Doutora Marina Gavioli, s/nº, Vila Nova, Joinville/SC",
+      "hours": "Recepção em dias úteis, das 7h às 19h.",
+      "phone": "(47) 3425-0827",
+      "whatsapp": "(47) 3425-0827",
+      "email": "sama.ube@joinville.sc.gov.br",
+      "website": "https://www.joinville.sc.gov.br/institucional/sama/ube/",
+      "volunteering": "Cadastro municipal para oferecer lar temporário.",
+      "projects": "Feira virtual Adote um Amigo e programa municipal de castração."
+    },
+    {
+      "slug": "vigilancia-ambiental",
+      "title": "Vigilância Ambiental de Joinville",
+      "description": "Unidade da Secretaria da Saúde que orienta moradores e investiga ocorrências relacionadas a zoonoses.",
+      "area": "Órgão municipal · Zoonoses",
+      "sourceUrl": "https://www.joinville.sc.gov.br/institucional/ses/dvs/uva/",
+      "verifiedAt": "2026-11-20",
+      "address": "Rua Aubé, 790, Boa Vista, Joinville/SC",
+      "hours": "Atendimento presencial de segunda a sexta, 7h–18h30, exceto feriados e pontos facultativos.",
+      "phone": "(47) 3433-1660",
+      "email": "vigilanciaambiental.saude@joinville.sc.gov.br",
+      "website": "https://www.joinville.sc.gov.br/institucional/ses/dvs/uva/"
+    },
+    {
+      "slug": "fiscalizacao",
+      "title": "Unidade de Fiscalização da SAMA",
+      "description": "Unidade municipal responsável por apurar denúncias de maus-tratos a animais registradas nos canais oficiais.",
+      "area": "Órgão municipal · Fiscalização",
+      "sourceUrl": "https://www.joinville.sc.gov.br/servicos/denunciar-maus-tratos-a-animais/",
+      "verifiedAt": "2026-11-20",
+      "website": "https://www.joinville.sc.gov.br/institucional/sama/unf/"
+    },
+    {
+      "slug": "gestao-ambiental",
+      "title": "Unidade de Gestão Ambiental da SAMA",
+      "description": "Unidade responsável pela carta de serviço de socorro à fauna silvestre em Joinville. O atendimento é realizado pelo IMA.",
+      "area": "Órgão municipal · Fauna silvestre",
+      "sourceUrl": "https://www.joinville.sc.gov.br/servicos/solicitar-socorro-a-animal-silvestre-doente-ou-ferido/",
+      "verifiedAt": "2026-11-20"
+    },
+    {
+      "slug": "abrigo-animal",
+      "title": "Associação Abrigo Animal",
+      "description": "Associação de Joinville que acolhe cães e gatos e promove adoção. A própria entidade informa que o número de vagas é limitado.",
+      "area": "ONG · Acolhimento e adoção",
+      "sourceUrl": "https://abrigoanimal.org.br/quem-somos/",
+      "verifiedAt": "2026-11-20",
+      "website": "https://abrigoanimal.org.br/contato/",
+      "hours": "Segunda a sábado, 9h–11h e 14h–17h. Fechado aos domingos.",
+      "projects": "Projeto Cãofilhado e brechó em apoio aos animais acolhidos."
+    },
+    {
+      "slug": "frada",
+      "title": "Frente de Ação pelos Direitos Animais (FRADA)",
+      "description": "A FRADA promove feiras de adoção e arrecada ração para animais em situação de vulnerabilidade em Joinville. Atua com voluntários, sem sede própria.",
+      "area": "ONG · Adoção e defesa dos animais",
+      "sourceUrl": "https://frada.com.br/sobre",
+      "verifiedAt": "2026-11-20",
+      "email": "fradadejoinville@gmail.com",
+      "website": "https://frada.com.br/",
+      "projects": "Feiras de adoção, Cãominhada e arrecadações."
+    },
+    {
+      "slug": "turma-do-gatil",
+      "title": "Turma do Gatil",
+      "description": "Grupo de protetoras de Joinville que cuida de gatos resgatados e procura lares definitivos.",
+      "area": "Grupo voluntário · Adoção de gatos",
+      "sourceUrl": "https://muellerjoinville.com.br/atracao/shopping-mueller-divulga-calendario-de-feirinhas-de-adocao-animal-para-2026/",
+      "verifiedAt": "2026-11-20",
+      "projects": "Feiras de adoção em parceria com o Shopping Mueller."
+    },
+    {
+      "slug": "patinhas-carentes",
+      "title": "Patinhas Carentes",
+      "description": "Grupo de proteção animal de Joinville que realiza resgates e encaminha animais para adoção responsável.",
+      "area": "Grupo voluntário · Proteção animal",
+      "sourceUrl": "https://muellerjoinville.com.br/atracao/shopping-mueller-divulga-calendario-de-feirinhas-de-adocao-animal-para-2026/",
+      "verifiedAt": "2026-11-20",
+      "projects": "Feiras de adoção em parceria com o Shopping Mueller."
+    }
+  ],
+  "events": [
+    {
+      "slug": "feira-turma-do-gatil-2026-11-21",
+      "title": "Feira de adoção da Turma do Gatil",
+      "type": "Feira de adoção",
+      "description": "Feira gratuita de adoção no térreo do Shopping Mueller, próximo à loja Cassol. A data consta no calendário anual divulgado pelo shopping.",
+      "start": "2026-11-21T13:00:00.000Z",
+      "end": "2026-11-21T18:00:00.000Z",
+      "location": "Shopping Mueller, Rua Visconde de Taunay, 235, Centro, Joinville/SC",
+      "organizer": "Turma do Gatil",
+      "organization": "turma-do-gatil",
+      "contact": "contato@muellerjoinville.com.br",
+      "sourceUrl": "https://muellerjoinville.com.br/atracao/shopping-mueller-divulga-calendario-de-feirinhas-de-adocao-animal-para-2026/",
+      "verifiedAt": "2026-11-20"
+    },
+    {
+      "slug": "feira-patinhas-carentes-2026-12-12",
+      "title": "Feira de adoção do Patinhas Carentes",
+      "type": "Feira de adoção",
+      "description": "Feira gratuita de adoção no térreo do Shopping Mueller, próximo à loja Cassol. A data consta no calendário anual divulgado pelo shopping.",
+      "start": "2026-12-12T13:00:00.000Z",
+      "end": "2026-12-12T18:00:00.000Z",
+      "location": "Shopping Mueller, Rua Visconde de Taunay, 235, Centro, Joinville/SC",
+      "organizer": "Patinhas Carentes",
+      "organization": "patinhas-carentes",
+      "contact": "contato@muellerjoinville.com.br",
+      "sourceUrl": "https://muellerjoinville.com.br/atracao/shopping-mueller-divulga-calendario-de-feirinhas-de-adocao-animal-para-2026/",
+      "verifiedAt": "2026-11-20"
+    },
+    {
+      "slug": "feira-turma-do-gatil-2026-12-19",
+      "title": "Feira de adoção da Turma do Gatil",
+      "type": "Feira de adoção",
+      "description": "Feira gratuita de adoção no térreo do Shopping Mueller, próximo à loja Cassol. A data consta no calendário anual divulgado pelo shopping.",
+      "start": "2026-12-19T13:00:00.000Z",
+      "end": "2026-12-19T18:00:00.000Z",
+      "location": "Shopping Mueller, Rua Visconde de Taunay, 235, Centro, Joinville/SC",
+      "organizer": "Turma do Gatil",
+      "organization": "turma-do-gatil",
+      "contact": "contato@muellerjoinville.com.br",
+      "sourceUrl": "https://muellerjoinville.com.br/atracao/shopping-mueller-divulga-calendario-de-feirinhas-de-adocao-animal-para-2026/",
+      "verifiedAt": "2026-11-20"
+    }
+  ]
+}

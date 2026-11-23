@@ -1,0 +1,38 @@
+[
+  {
+    "id": "pmj-noticias-adocao",
+    "kind": "events",
+    "title": "Prefeitura de Joinville · notícias sobre feiras de adoção",
+    "url": "https://www.joinville.sc.gov.br/?post_type=noticia&s=feira+de+ado%C3%A7%C3%A3o",
+    "termsUrl": "https://www.joinville.sc.gov.br/termo-de-uso-e-politica-de-privacidade/",
+    "reviewedAt": "2026-11-20",
+    "scope": "Identificação de anúncios em títulos e links públicos. Conferência editorial antes de publicar."
+  },
+  {
+    "id": "pmj-castracao",
+    "kind": "service",
+    "title": "Prefeitura de Joinville · carta de castração",
+    "url": "https://www.joinville.sc.gov.br/servicos/requerer-castracao-de-animal-domestico/",
+    "termsUrl": "https://www.joinville.sc.gov.br/termo-de-uso-e-politica-de-privacidade/",
+    "reviewedAt": "2026-11-20",
+    "scope": "Identificação de alteração em carta pública. Conferência editorial de contatos, disponibilidade e critérios."
+  },
+  {
+    "id": "pmj-noticias-cbea",
+    "kind": "events",
+    "title": "Prefeitura de Joinville · notícias do CBEA sobre adoção e mutirões",
+    "url": "https://www.joinville.sc.gov.br/?post_type=noticia&s=ado%C3%A7%C3%A3o+cbea",
+    "termsUrl": "https://www.joinville.sc.gov.br/termo-de-uso-e-politica-de-privacidade/",
+    "reviewedAt": "2026-11-23",
+    "scope": "Identificação de anúncios em títulos e links públicos. Conferência editorial antes de publicar."
+  },
+  {
+    "id": "pmj-noticias-castracao",
+    "kind": "events",
+    "title": "Prefeitura de Joinville · notícias sobre castração, vacinação e microchipagem",
+    "url": "https://www.joinville.sc.gov.br/?post_type=noticia&s=castra%C3%A7%C3%A3o",
+    "termsUrl": "https://www.joinville.sc.gov.br/termo-de-uso-e-politica-de-privacidade/",
+    "reviewedAt": "2026-11-23",
+    "scope": "Identificação de anúncios em títulos e links públicos. Conferência editorial antes de publicar."
+  }
+]
