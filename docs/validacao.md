@@ -40,3 +40,16 @@ Windows 11, Node 24.14.1, Wrangler 4.166.0, Chrome do sistema para o Playwright.
 | Produção | Pages respondeu 200 em `/`, `/servicos`, `/agenda`, `/organizacoes`, `/enviar-evento`, `/sitemap.xml`; `/admin` respondeu 403 (Access ainda não configurado). Cron executou as quatro fontes com `ok` e arquivou o evento de 21/11. |
 
 Não verificado: envio real pelo formulário público com Turnstile em produção, login no painel (depende do Cloudflare Access) e um rascunho gerado por notícia futura real.
+
+## Validação de 23 de novembro de 2026 (site somente leitura)
+
+O Cloudflare Access exige cartão de crédito, então o painel, o envio público, o Turnstile e o importador foram removidos. O catálogo passou a viver em `data/seed.json` (atualização semanal da equipe) e a coleta da Prefeitura publica sozinha, com selo.
+
+| Verificação | Resultado |
+| --- | --- |
+| ESLint, TypeScript strict, build | Sem erros. |
+| Vitest | 21 testes passaram: validação de todas as entradas do catálogo, sincronização (idempotente, edição, arquivamento do removido, reinclusão, preservação do evento coletado), páginas públicas sem link de envio, 404 em `/enviar-evento` e `/admin`, 405 em POST, HEAD, escape de texto, arquivamento com fonte fora do ar e publicação automática com selo e sem duplicar. |
+| Playwright móvel | 1 cenário passou (busca até contato; axe-core sem violações em 7 rotas, sem overflow horizontal). |
+| Produção | `npm run deploy` publicou Pages e Worker. `/`, `/servicos`, `/agenda`, `/organizacoes`, `/sobre`, `/privacidade`, `/sitemap.xml` e `/robots.txt` responderam 200; `/enviar-evento` e `/admin` 404; POST 405. O D1 remoto registrou a nova versão do catálogo. Os secrets `TURNSTILE_SECRET` e `RATE_SECRET` foram apagados do Pages. |
+
+Não verificado: um evento publicado automaticamente a partir de notícia futura real (não havia nenhuma no portal nesta data).

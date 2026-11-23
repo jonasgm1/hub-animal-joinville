@@ -1,140 +1,150 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { memoryDb } from "./sqlite";
 import { handle } from "../src/app";
-import { seedIfNew, seed, save, raw, listed } from "../src/db";
-import { type Env, localUTC, matchService, Problem } from "../src/model";
+import { seed, syncCatalog, listed, raw } from "../src/db";
+import {
+  type Env,
+  type Table,
+  localUTC,
+  matchService,
+  Problem,
+  validateEntry,
+} from "../src/model";
 import { maintenance } from "../src/maintenance";
 import { monitorSources } from "../src/collect";
 import { readFileSync } from "node:fs";
-import { verifyHuman, identity } from "../src/security";
-const origin = "https://local.example",
-  ctx = { waitUntil: () => {} };
-const deps = {
-  authenticate: async () => "editor@example.test",
-  challenge: async () => {},
-};
-const next = new Date(Date.now() + 35 * 86400000).toISOString().slice(0, 10);
-const fields = {
-  title: "Feira local de teste",
-  description: "Evento controlado para teste.",
-  type: "Feira de adoção",
-  start: next + "T10:00",
-  end: next + "T14:00",
-  location: "Local de teste, Joinville",
-  organizer: "Organização de teste",
-  contact: "publico@example.test",
-  sourceUrl: "https://example.test/fonte",
-  joinville: "sim",
-  sender: "Responsável de teste",
-  private_contact: "privado@example.test",
-};
-function request(path: string, body?: Record<string, string>) {
-  return new Request(
-    origin + path,
-    body
-      ? {
-          method: "POST",
-          headers: { Origin: origin },
-          body: new URLSearchParams(body),
-        }
-      : {},
-  );
-}
+const origin = "https://local.example";
 function setup() {
   const { db, sql } = memoryDb();
-  const env: Env = { DB: db, RATE_SECRET: "fixture" };
+  const env: Env = { DB: db };
   return {
     db,
     sql,
-    env,
-    call: (path: string, body?: Record<string, string>) =>
-      handle(request(path, body), env, ctx, deps),
+    call: (path: string, init: RequestInit = {}) =>
+      handle(new Request(origin + path, init), env),
   };
 }
-describe("Diretório e moderação", () => {
-  it("importa a curadoria uma vez e mantém critérios junto ao programa", async () => {
-    const { db } = setup();
-    await seedIfNew(db);
-    await seedIfNew(db);
+const tables: Table[] = ["organizations", "services", "events"];
+// Forces syncCatalog to run again, as a new version of data/seed.json would.
+const forget = (sql: ReturnType<typeof memoryDb>["sql"]) =>
+  sql.prepare("DELETE FROM settings WHERE key LIKE 'catalog-%'").run();
+
+describe("Catálogo semanal (data/seed.json)", () => {
+  it("todas as entradas são válidas, únicas e apontam para organizações existentes", () => {
+    for (const t of tables) {
+      const slugs = seed[t].map((e) => e.slug);
+      expect(new Set(slugs).size, t).toBe(slugs.length);
+      for (const e of seed[t])
+        expect(() => validateEntry(t, e), e.slug).not.toThrow();
+    }
+    const orgs = new Set(seed.organizations.map((o) => o.slug));
+    for (const e of [...seed.services, ...seed.events])
+      if (e.organization) expect(orgs.has(e.organization), e.slug).toBe(true);
+  });
+  it("sincroniza uma vez, atualiza edições, arquiva removidos e preserva a coleta", async () => {
+    const { db, sql, call } = setup();
+    await call("/");
     expect(await listed(db, "services")).toHaveLength(seed.services.length);
-    const e = seed.services.find((e) => e.slug === "castracao")!;
+    const castracao = seed.services.find((e) => e.slug === "castracao")!;
     expect(
-      matchService(e, new URLSearchParams("q=castracao&acesso=criterios")),
+      matchService(
+        castracao,
+        new URLSearchParams("q=castracao&acesso=criterios"),
+      ),
     ).toBe(true);
-    expect(matchService(e, new URLSearchParams("acesso=aberto"))).toBe(false);
-    expect(e.eligibility).toContain("5%");
-  });
-  it("envia, bloqueia duplicata, aprova em transação e remove o contato privado", async () => {
-    const { call, db, sql } = setup();
-    expect((await call("/enviar-evento", fields)).status).toBe(303);
-    expect((await call("/enviar-evento", fields)).status).toBe(409);
-    const row = sql.prepare("SELECT id FROM submissions").get()!;
-    expect(await (await call("/agenda")).text()).not.toContain(fields.title);
-    expect(
-      (
-        await call("/admin/moderar", {
-          id: String(row.id),
-          decision: "aprovar",
-        })
-      ).status,
-    ).toBe(303);
-    expect(
-      (
-        await call("/admin/moderar", {
-          id: String(row.id),
-          decision: "aprovar",
-        })
-      ).status,
-    ).toBe(409);
-    const ev = (await listed(db, "events")).find(
-      (r) => r.title === fields.title,
-    )!;
-    expect(ev).toBeDefined();
-    const page = await (await call("/agenda/" + ev.slug)).text();
-    expect(page).toContain(fields.title);
-    expect(page).not.toContain(fields.private_contact);
-    expect(
-      sql.prepare("SELECT private_contact FROM submissions").get()
-        ?.private_contact,
-    ).toBeNull();
-  });
-  it("rejeita, limpa contato e mantém o evento privado", async () => {
-    const { call, sql } = setup();
-    await call("/enviar-evento", fields);
-    const row = sql.prepare("SELECT id FROM submissions").get()!;
-    await call("/admin/moderar", { id: String(row.id), decision: "rejeitar" });
-    expect(
-      sql.prepare("SELECT status,sender FROM submissions").get(),
-    ).toMatchObject({ status: "rejected", sender: null });
-    expect(await (await call("/agenda")).text()).not.toContain(fields.title);
-  });
-  it("preserva a versão nova quando há edição concorrente e restaura pelo histórico", async () => {
-    const { db, call, sql } = setup();
-    await seedIfNew(db);
-    const e = { ...seed.services[0], title: "Edição conferida" };
-    await save(db, "services", e, 1, "editor");
-    await expect(save(db, "services", e, 1, "outro")).rejects.toMatchObject({
-      status: 409,
-    });
-    const version = sql
+    const revision = (slug: string) =>
+      sql.prepare("SELECT revision FROM services WHERE slug=?").get(slug)
+        ?.revision;
+    const [edited, removed] = seed.services;
+    const first = revision(edited.slug);
+    forget(sql);
+    await syncCatalog(db);
+    expect(revision(edited.slug)).toBe(first);
+
+    sql
+      .prepare("INSERT INTO sources(id,url,kind) VALUES('x','x','reference')")
+      .run();
+    sql
       .prepare(
-        "SELECT id FROM change_history WHERE entity='services' AND slug=? AND revision=1",
+        "INSERT INTO events(slug,data,source_id,identity,ends_at,status,actor,updated_at) VALUES('coletado','{}','x','id','2999-01-01','published','coleta-automatica','x')",
       )
-      .get(e.slug)!.id;
-    const res = await call("/admin/restaurar", {
-      table: "services",
-      slug: e.slug,
-      revision: "2",
-      version: String(version),
-    });
-    expect(res.status).toBe(303);
-    expect(JSON.parse((await raw(db, "services", e.slug))!.data).title).toBe(
-      seed.services[0].title,
-    );
+      .run();
+    const all = seed.services;
+    try {
+      seed.services = [
+        { ...edited, title: "Título revisado" },
+        ...all.slice(2),
+      ];
+      forget(sql);
+      await syncCatalog(db);
+      expect(
+        JSON.parse((await raw(db, "services", edited.slug))!.data).title,
+      ).toBe("Título revisado");
+      expect((await raw(db, "services", removed.slug))!.status).toBe(
+        "archived",
+      );
+      expect((await raw(db, "events", "coletado"))!.status).toBe("published");
+      seed.services = all;
+      forget(sql);
+      await syncCatalog(db);
+      expect((await raw(db, "services", removed.slug))!.status).toBe(
+        "published",
+      );
+      expect(
+        JSON.parse((await raw(db, "services", edited.slug))!.data).title,
+      ).toBe(edited.title);
+    } finally {
+      seed.services = all;
+    }
   });
+  it("mantém texto do catálogo escapado", async () => {
+    const e = seed.services[0];
+    const original = e.description;
+    e.description = "Texto <b>literal</b>";
+    try {
+      const { call } = setup();
+      const html = await (await call("/servicos/" + e.slug)).text();
+      expect(html).toContain("&lt;b&gt;literal&lt;/b&gt;");
+    } finally {
+      e.description = original;
+    }
+  });
+});
+
+describe("Site somente leitura", () => {
+  it("serve as páginas públicas e recusa qualquer escrita", async () => {
+    const { call } = setup();
+    for (const path of [
+      "/",
+      "/servicos",
+      "/agenda",
+      "/organizacoes",
+      "/sobre",
+      "/privacidade",
+    ]) {
+      const res = await call(path);
+      expect(res.status, path).toBe(200);
+      expect(await res.text(), path).not.toContain("enviar-evento");
+    }
+    expect((await call("/enviar-evento")).status).toBe(404);
+    expect((await call("/admin")).status).toBe(404);
+    expect(
+      (await call("/agenda", { method: "POST", body: "x=1" })).status,
+    ).toBe(405);
+    const head = await call("/agenda", { method: "HEAD" });
+    expect(head.status).toBe(200);
+    expect(await head.text()).toBe("");
+  });
+  it("converte horário de Joinville e rejeita datas impossíveis", () => {
+    expect(() => localUTC("2027-02-30T10:00")).toThrow(Problem);
+    expect(localUTC("2027-01-01T23:50")).toBe("2027-01-02T02:50:00.000Z");
+  });
+});
+
+describe("Coleta automática", () => {
   it("arquiva vencidos e protege o catálogo se o portal de origem falhar", async () => {
-    const { db, sql } = setup();
-    await seedIfNew(db);
+    const { db, sql, call } = setup();
+    await call("/");
     sql
       .prepare(
         "UPDATE events SET ends_at='2000-01-01T00:00:00.000Z', revision=revision+1",
@@ -149,10 +159,11 @@ describe("Diretório e moderação", () => {
         .get()?.n,
     ).toBe(monitorSources.length);
     expect(await listed(db, "services")).toHaveLength(seed.services.length);
+    expect(await (await call("/sobre")).text()).toContain("falhou em");
   });
-  it("transforma notícia nova em rascunho pendente, sem publicar nem duplicar", async () => {
-    const { db, sql, call } = setup();
-    await seedIfNew(db);
+  it("publica notícia nova com selo de coleta automática, sem duplicar", async () => {
+    const { db, call } = setup();
+    await call("/");
     const day = new Date(Date.now() + 10 * 86400000);
     const ddmm = day.getUTCDate() + "/" + (day.getUTCMonth() + 1);
     const article =
@@ -177,87 +188,13 @@ describe("Diretório e moderação", () => {
     };
     await maintenance(db, network as typeof fetch);
     await maintenance(db, network as typeof fetch);
-    const rows = sql
-      .prepare("SELECT id,sender,private_contact FROM submissions")
-      .all();
-    expect(rows).toEqual([
-      { id: rows[0].id, sender: "Coleta automática", private_contact: null },
-    ]);
-    expect(await (await call("/agenda")).text()).not.toContain(
-      "feira de adoção de teste",
-    );
-    expect(await (await call("/admin")).text()).toContain(
-      "Rascunho da coleta automática",
-    );
-    await call("/admin/moderar", {
-      id: String(rows[0].id),
-      decision: "aprovar",
-    });
+    const found = (await listed(db, "events")).filter((e) => e.automatic);
+    expect(found).toHaveLength(1);
     expect(await (await call("/agenda")).text()).toContain(
       "CBEA promove feira de adoção de teste",
     );
-  });
-  it("bloqueia origem divergente, links inseguros, datas impossíveis e tentativas em excesso", async () => {
-    const { env, call } = setup();
-    expect(() => localUTC("2027-02-30T10:00")).toThrow(Problem);
-    expect(localUTC("2027-01-01T23:50")).toBe("2027-01-02T02:50:00.000Z");
-    const r = request("/enviar-evento", fields);
-    r.headers.set("Origin", "https://alheio.example");
-    expect((await handle(r, env, ctx, deps)).status).toBe(403);
-    expect(
-      (
-        await call("/enviar-evento", {
-          ...fields,
-          sourceUrl: "data:text/plain,invalido",
-        })
-      ).status,
-    ).toBe(422);
-    for (let i = 0; i < 6; i++)
-      await call("/enviar-evento", { ...fields, title: "Evento " + i });
-    expect((await call("/enviar-evento", fields)).status).toBe(429);
-  });
-  it("falha fechada para admin e verifica ação e domínio do Turnstile", async () => {
-    const { env } = setup();
-    expect((await handle(request("/admin"), env, ctx)).status).toBe(403);
-    await expect(
-      identity(request("/admin"), {
-        ...env,
-        ACCESS_TEAM: "https://test.cloudflareaccess.com",
-        ACCESS_AUD: "teste",
-      }),
-    ).rejects.toMatchObject({ status: 403 });
-    const form = new FormData();
-    form.set("cf-turnstile-response", "fixture");
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async () =>
-        Response.json({
-          success: true,
-          hostname: "outro.example",
-          action: "enviar_evento",
-        }),
-      ),
-    );
-    try {
-      await expect(
-        verifyHuman(request("/"), form, {
-          ...env,
-          TURNSTILE_SECRET: "teste",
-          TURNSTILE_SITE_KEY: "teste",
-        }),
-      ).rejects.toMatchObject({ status: 422 });
-    } finally {
-      vi.unstubAllGlobals();
-    }
-  });
-  it("mantém texto submetido escapado na moderação", async () => {
-    const { call } = setup();
-    await call("/enviar-evento", {
-      ...fields,
-      description: "Texto <b>literal</b>",
-    });
-    expect(await (await call("/admin")).text()).toContain(
-      "&lt;b&gt;literal&lt;/b&gt;",
-    );
+    const detail = await (await call("/agenda/" + found[0].slug)).text();
+    expect(detail).toContain("Coletado automaticamente");
+    expect(detail).toContain(article);
   });
 });

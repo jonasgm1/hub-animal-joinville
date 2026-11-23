@@ -15,20 +15,7 @@ createServer(async (req, res) => {
     headers,
     ...(body ? { body } : {}),
   });
-  const response = await handle(
-    r,
-    {
-      DB: db,
-      RATE_SECRET: "test-only",
-      TURNSTILE_SITE_KEY: "test-only",
-      TURNSTILE_SECRET: "test-only",
-    },
-    { waitUntil: () => {} },
-    {
-      authenticate: async () => "fixture@example.test",
-      challenge: async () => {},
-    },
-  );
+  const response = await handle(r, { DB: db });
   res.writeHead(response.status, Object.fromEntries(response.headers));
   res.end(await response.text());
 }).listen(4319, "127.0.0.1");

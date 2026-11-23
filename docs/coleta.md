@@ -1,6 +1,6 @@
 # Fontes de monitoramento
 
-> Atualização de 23/11/2026: o cadastro passou a ter quatro fontes, todas no portal da Prefeitura (três buscas de notícias e a carta de castração). A coleta roda duas vezes por dia e, quando a notícia traz dia, horário e endereço, cria um rascunho na fila de moderação. Ver "Rascunhos automáticos" no fim deste documento.
+> Atualização de 23/11/2026: o cadastro passou a ter quatro fontes, todas no portal da Prefeitura (três buscas de notícias e a carta de castração). A coleta roda duas vezes por dia e, quando a notícia traz dia, horário e endereço, publica o evento com o selo "Coletado automaticamente". Ver "Publicação automática" no fim deste documento.
 
 Conferência em 20 de novembro de 2026, com agente identificado como `AnimalJoinville/1.0`. O cadastro versionado em `data/sources.json` delimita cada endereço e sua finalidade.
 
@@ -31,7 +31,7 @@ Cada execução consulta robots.txt e no máximo quatro notícias distintas na p
 
 Validação offline executada com `npx vitest run tests/collect.test.ts`: dez testes aprovados. Para repetir o acesso real, executar `node scripts/smoke-collect.mjs` na raiz após instalar as dependências. O teste não integra a rotina de CI e a lista de resultados pode variar.
 
-## Rascunhos automáticos (23/11/2026)
+## Publicação automática (23/11/2026)
 
 Buscas cadastradas: `feira de adoção`, `adoção cbea` e `castração`. A pesquisa do portal já devolve as notícias mais recentes primeiro; cada execução lê até seis notícias por busca cujo título combine um termo de evento (feira, mutirão, campanha, vacinação) com um termo animal.
 
@@ -40,11 +40,11 @@ Para cada notícia:
 - a data de publicação vem da meta `article:published_time`;
 - o dia do evento é calculado a partir dela: "neste domingo", "no próximo sábado (22/8)", "18/10" ou "5 de janeiro";
 - o horário vem de "das 9h às 13h" e o local de um trecho "no/na ... (rua/avenida ...)";
-- se os três existirem e o evento ainda não terminou, entra um envio pendente marcado "Coleta automática" (sem dados pessoais), com tipo, organizador (CBEA quando citado) e a notícia como fonte e contato;
-- se faltar algum dado, a observação vai para "Alterações e descobertas"; notícias com mais de 21 dias ficam como `stale`, fora da fila.
+- se os três existirem e o evento ainda não terminou, o evento é publicado na agenda com o selo "Coletado automaticamente", tipo, organizador (CBEA quando citado) e a notícia como fonte e contato;
+- se faltar algum dado, a notícia fica só registrada em `source_observations` (status `pending`); notícias com mais de 21 dias ficam como `stale`.
 
-Um rascunho nunca é publicado sem aprovação. Rascunhos já aprovados, rejeitados ou com a mesma ocorrência (título, início e local) não são recriados.
+Não há revisão humana antes da publicação automática: o site não tem painel (o Cloudflare Access exigiria cartão de crédito). Por isso a extração só aceita notícias da Prefeitura com dia, horário e endereço explícitos, e a ficha sempre aponta para a notícia original. Um evento com a mesma ocorrência (título, início e local) ou o mesmo identificador não é recriado, inclusive se a equipe o tiver arquivado. Eventos lançados pela equipe com título diferente podem aparecer em duplicidade; a revisão semanal arquiva o coletado (ver [operacao.md](operacao.md)).
 
 A listagem de busca (≈400 KB) é lida com expressões regulares limitadas ao `<main>`, porque montar o DOM custava ≈50 ms de CPU, acima do limite do plano gratuito de Workers. As notícias, menores, continuam lidas como DOM.
 
-Execução real em produção em 23/11/2026 às 22h05 UTC: as quatro fontes terminaram com status `ok`, 15 observações foram registradas (14 notícias antigas como `stale` e a referência da carta) e nenhum rascunho, pois não havia feira futura anunciada no portal.
+Execução real em produção em 23/11/2026 às 22h05 UTC: as quatro fontes terminaram com status `ok`, 15 observações foram registradas (14 notícias antigas como `stale` e a referência da carta) e nenhum evento, pois não havia feira futura anunciada no portal.

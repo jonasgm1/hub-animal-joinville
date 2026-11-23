@@ -1,4 +1,5 @@
 import { listed, raw } from "./db";
+import { monitorSources } from "./collect";
 import {
   esc,
   heading as pageHeading,
@@ -126,8 +127,7 @@ async function home(db: D1Database): Promise<PublicView> {
       <ul>${urgent.map((e) => `<li>${link(href("services", e), e.title)}</li>`).join("") || '<li><a href="/servicos">Consultar o diretório</a></li>'}</ul></aside></div>
       <section class="home-block">${sectionHeading("Encontrar por assunto")}<ul class="categories">${categories.map((c) => `<li>${link(c === "Feiras e campanhas" ? "/agenda" : "/servicos?categoria=" + encodeURIComponent(c), c)}</li>`).join("")}</ul></section>
       <div class="columns"><section>${sectionHeading("Serviços em destaque", link("/servicos", "Ver todos os serviços"))}${featured.length ? serviceList(featured) : empty("Nenhum serviço verificado até o momento.")}</section>
-      <section>${sectionHeading("Próximas feiras e campanhas", link("/agenda", "Ver agenda"))}${events.length ? eventList(events.slice(0, 3)) : empty("Nenhum evento confirmado para as próximas datas.")}
-      <p>${link("/enviar-evento", "Enviar um evento para a agenda")}</p></section></div>
+      <section>${sectionHeading("Próximas feiras e campanhas", link("/agenda", "Ver agenda"))}${events.length ? eventList(events.slice(0, 3)) : empty("Nenhum evento confirmado para as próximas datas.")}</section></div>
       <section class="community"><h2>Quem atua em Joinville</h2><p>Consulte órgãos públicos, ONGs e grupos voluntários, com seus projetos e contatos divulgados.</p>${link("/organizacoes", "Conhecer as organizações")} · ${link("/sobre", "Sobre o projeto")}${castrationGuide}</section>`,
   };
 }
@@ -181,7 +181,7 @@ async function agendaView(
   return {
     title,
     body: `${pageHeading(title, archived ? "Consulte os eventos encerrados em Joinville." : "Datas divulgadas pelos organizadores. Os horários são de Joinville.")}
-    <div class="actions"><a class="button" href="/enviar-evento">Enviar um evento</a>${link(archived ? "/agenda" : "/agenda/arquivo", archived ? "Voltar à agenda" : "Ver eventos encerrados")}</div>
+    <div class="actions">${link(archived ? "/agenda" : "/agenda/arquivo", archived ? "Voltar à agenda" : "Ver eventos encerrados")}</div>
     <form class="filters" action="${path}">${menu("Tipo de evento", "tipo", choices(eventTypes), query)}<button>Filtrar eventos</button></form>
     <section>${sectionHeading(archived ? "Eventos encerrados" : "Próximos eventos")}${events.length ? eventList(events) : empty(archived ? "Nenhum evento encerrado nesta seleção." : "Nenhum evento confirmado nesta seleção. Consulte a agenda novamente mais tarde.")}</section>`,
   };
@@ -253,13 +253,14 @@ function contactDetails(e: Entry, table: Table) {
     : "";
 }
 function evidence(e: Entry) {
-  const status =
-    e.cost === "incerto"
+  const status = e.automatic
+    ? "Coletado automaticamente de notícia da Prefeitura · confira a publicação original"
+    : e.cost === "incerto"
       ? "Fonte consultada · Gratuidade sem confirmação"
       : "Informações conferidas na fonte";
   const host = safeUrl(e.sourceUrl) ? new URL(e.sourceUrl).hostname : "";
   return `<section class="evidence"><h2>Fonte e verificação</h2><p>${tag(status)}</p>
-    <p>Última verificação em <time datetime="${esc(e.verifiedAt)}">${esc(dateLabel(e.verifiedAt))}</time>.</p>
+    <p>${e.automatic ? "Coletado em" : "Última verificação em"} <time datetime="${esc(e.verifiedAt)}">${esc(dateLabel(e.verifiedAt))}</time>.</p>
     ${host ? `<p>${link(e.sourceUrl, "Consultar publicação original em " + host)}</p>` : ""}</section>`;
 }
 function paragraph(title: string, value?: string) {
@@ -334,6 +335,35 @@ async function detail(
   return page;
 }
 
+async function about(db: D1Database): Promise<PublicView> {
+  const { results } = await db
+    .prepare(
+      "SELECT source_id,status,finished_at FROM scrape_runs r WHERE started_at=(SELECT max(started_at) FROM scrape_runs WHERE source_id=r.source_id)",
+    )
+    .all<{ source_id: string; status: string; finished_at: string | null }>();
+  const runs = monitorSources
+    .map((s) => {
+      const r = results.find((r) => r.source_id === s.url);
+      const state = !r
+        ? "ainda sem execução"
+        : r.status === "ok"
+          ? "concluída em " + dateLabel(r.finished_at!, true)
+          : r.status === "failed"
+            ? "falhou em " + dateLabel(r.finished_at!, true)
+            : "em andamento";
+      return `<li>${link(s.url, s.title)}: ${esc(state)}</li>`;
+    })
+    .join("");
+  return {
+    title: "Sobre o projeto",
+    body: `<article class="detail">${pageHeading("Sobre o Hub Animal Joinville", "Um diretório independente para quem busca ajuda com animais em Joinville, Santa Catarina.")}
+    ${paragraph("De onde vêm as informações", "Cada serviço, organização e evento tem uma publicação de referência e a data em que foi conferido. A gratuidade, os documentos e os limites de atendimento aparecem na ficha do serviço.")}
+    ${paragraph("Como a agenda é atualizada", "Uma vez por semana a equipe revisa as publicações das ONGs, protetores e órgãos públicos e atualiza a agenda. Além disso, duas vezes por dia uma rotina automática lê as notícias públicas da Prefeitura de Joinville sobre feiras de adoção, mutirões e campanhas; quando a notícia traz dia, horário e local, o evento entra na agenda com o selo de coleta automática e o link da notícia original. Eventos encerrados ficam no arquivo.")}
+    <section><h2>Última busca automática por fonte</h2><ul>${runs}</ul></section>${castrationGuide}
+    <p class="actions">${link("/privacidade", "Consultar o aviso de privacidade")}</p></article>`,
+  };
+}
+
 export async function publicView(
   env: Env,
   url: URL,
@@ -344,21 +374,13 @@ export async function publicView(
   if (path === "/agenda" || path === "/agenda/arquivo")
     return agendaView(env.DB, url.searchParams, path.endsWith("/arquivo"));
   if (path === "/organizacoes") return organizationsView(env.DB);
-  if (path === "/sobre")
-    return {
-      title: "Sobre o projeto",
-      body: `<article class="detail">${pageHeading("Sobre o Animal Joinville", "Um diretório independente para quem busca ajuda com animais em Joinville, Santa Catarina.")}
-    ${paragraph("De onde vêm as informações", "Cada serviço, organização e evento tem uma publicação de referência e a data em que a equipe conferiu os dados. A gratuidade, os documentos e os limites de atendimento aparecem na ficha do serviço.")}
-    ${paragraph("Como a agenda é atualizada", "Organizadores podem enviar eventos. Duas vezes por dia, uma rotina automática lê as notícias públicas da Prefeitura de Joinville sobre feiras de adoção, mutirões e campanhas e prepara rascunhos. A moderação confere a publicação original, a data, o local e o contato antes de incluir qualquer evento na agenda. Eventos encerrados ficam no arquivo.")}${castrationGuide}
-    <p class="actions">${link("/enviar-evento", "Enviar um evento")}${link("/privacidade", "Consultar o aviso de privacidade")}</p></article>`,
-    };
+  if (path === "/sobre") return about(env.DB);
   if (path === "/privacidade")
     return {
       title: "Privacidade",
       body: `<article class="detail">${pageHeading("Privacidade", "A consulta ao diretório é aberta e dispensa cadastro.")}
-    ${paragraph("Envio de eventos", "O formulário pede nome e e-mail privados de quem envia o evento para conferência pela moderação. Para divulgação, informe somente o contato que o responsável pelo evento autorizou tornar público.")}
-    ${paragraph("Guarda dos dados", "O sistema remove o nome e o e-mail privados ao aprovar ou rejeitar o envio. A rotina de manutenção limpa esses campos de envios pendentes com mais de 30 dias.")}
-    ${paragraph("Proteção contra spam", "A Cloudflare processa a verificação antispam do formulário. Para limitar tentativas, a aplicação gera um identificador temporário a partir do endereço de rede e da hora do envio.")}
+    ${paragraph("Dados coletados", "O site não tem formulários, cadastro nem cookies próprios. A Cloudflare, que hospeda o site, processa os registros técnicos de acesso necessários ao funcionamento e à segurança.")}
+    ${paragraph("Contatos publicados", "Os contatos exibidos são os divulgados publicamente pelos próprios órgãos, organizações e organizadores de eventos, com link para a publicação de origem.")}
     <h2>Denúncias de maus-tratos</h2><p>Encaminhe o relato e as informações pessoais diretamente ao canal oficial indicado no ${link("/servicos?categoria=" + encodeURIComponent("Denúncias de maus-tratos"), "diretório de serviços")}.</p></article>`,
     };
   const match =

@@ -62,6 +62,7 @@ export interface Entry {
   location?: string;
   organizer?: string;
   contact?: string;
+  automatic?: boolean;
 }
 export interface Row {
   slug: string;
@@ -71,11 +72,6 @@ export interface Row {
 }
 export interface Env {
   DB: D1Database;
-  ACCESS_TEAM?: string;
-  ACCESS_AUD?: string;
-  TURNSTILE_SITE_KEY?: string;
-  TURNSTILE_SECRET?: string;
-  RATE_SECRET?: string;
   PUBLIC_ORIGIN?: string;
 }
 export class Problem extends Error {
@@ -119,8 +115,6 @@ export function localUTC(s: string) {
     throw new Problem(422, "A data informada é inválida.");
   return d.toISOString();
 }
-export const localInput = (s?: string) =>
-  s ? new Date(Date.parse(s) - 10800000).toISOString().slice(0, 16) : "";
 export const dateLabel = (s: string, time = false) =>
   new Intl.DateTimeFormat("pt-BR", {
     timeZone: "America/Sao_Paulo",
@@ -151,20 +145,6 @@ export function matchService(e: Entry, q: URLSearchParams) {
     (!q.get("publico") || e.audience === q.get("publico"))
   );
 }
-export function field(f: FormData, key: string, max = 300, required = false) {
-  const raw = f.get(key);
-  if (raw !== null && typeof raw !== "string")
-    throw new Problem(422, "Formato de campo inválido.");
-  const s = (raw || "").trim().normalize("NFC");
-  if (
-    s.length > max ||
-    /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/u.test(s) ||
-    (required && !s)
-  )
-    throw new Problem(422, "Verifique o preenchimento do campo " + key + ".");
-  return s;
-}
-export const isTable = (s: string): s is Table => tables.some((t) => t === s);
 export function validateEntry(t: Table, e: Entry) {
   if (
     !e.title ||

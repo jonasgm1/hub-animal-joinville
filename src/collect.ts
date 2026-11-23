@@ -7,6 +7,7 @@ export interface MonitorSource {
   id: string;
   kind: "events" | "service";
   url: string;
+  title: string;
 }
 interface Observation {
   url: string;
@@ -21,14 +22,14 @@ const robotsUrl = publisher + "/robots.txt";
 const agent = "AnimalJoinville";
 const pageLimit = 700 * 1024;
 export const monitorSources: MonitorSource[] = registry.map(
-  ({ id, kind, url }) => {
+  ({ id, kind, url, title }) => {
     if (
       (kind !== "events" && kind !== "service") ||
       new URL(url).origin !== publisher
     ) {
       throw new Error("Fonte fora do catálogo municipal.");
     }
-    return { id, kind, url };
+    return { id, kind, url, title };
   },
 );
 
@@ -223,7 +224,7 @@ export function announcedDay(body: string, published: string) {
   );
 }
 
-// A moderation draft, only when the day, the hours and an address-like place are all stated.
+// An automatic event, only when the day, the hours and an address-like place are all stated.
 export function draftEvent(
   title: string,
   body: string,
@@ -271,6 +272,7 @@ export function draftEvent(
       : "Prefeitura de Joinville",
     ...(cbea ? { organization: "cbea" } : {}),
     contact: url,
+    automatic: true,
   };
 }
 

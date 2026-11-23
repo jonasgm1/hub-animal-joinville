@@ -13,7 +13,6 @@
     }
   ],
   "vars": {
-    "PUBLIC_ORIGIN": "https://hubanimaljoinville.pages.dev",
-    "TURNSTILE_SITE_KEY": "0x4AAAAAAGPgqSJcyT0P9EXA"
+    "PUBLIC_ORIGIN": "https://hubanimaljoinville.pages.dev"
   }
 }

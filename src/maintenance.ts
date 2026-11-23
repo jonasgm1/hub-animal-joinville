@@ -1,6 +1,6 @@
 import { monitorSources, observe } from "./collect";
-import { source } from "./db";
-import { fingerprint, now } from "./model";
+import { insert, source } from "./db";
+import { now } from "./model";
 export async function digest(text: string) {
   return Array.from(
     new Uint8Array(
@@ -14,20 +14,13 @@ export async function maintenance(
   fetcher: typeof fetch = fetch,
 ) {
   const at = now(),
-    owner = crypto.randomUUID(),
-    cutoff = new Date(Date.now() - 30 * 86400000).toISOString();
+    owner = crypto.randomUUID();
   await db.batch([
     db
       .prepare(
         "UPDATE events SET status='archived',actor='agenda',revision=revision+1,updated_at=? WHERE status='published' AND ends_at<=?",
       )
       .bind(at, at),
-    db
-      .prepare(
-        "UPDATE submissions SET status='expired',sender=NULL,private_contact=NULL,reviewed_at=? WHERE status='pending' AND created_at<?",
-      )
-      .bind(at, cutoff),
-    db.prepare("DELETE FROM rate_limits WHERE expires_at<=?").bind(at),
     db
       .prepare("DELETE FROM scrape_runs WHERE started_at<?")
       .bind(new Date(Date.now() - 90 * 86400000).toISOString()),
@@ -63,23 +56,17 @@ export async function maintenance(
             .first<{ digest: string }>();
           if (prior?.digest === hash) continue;
           const draft = c.draft && c.draft.end! > now() ? c.draft : undefined;
-          if (draft) {
-            const identity = fingerprint(draft);
+          // Published without review, flagged as automatic; the page links the original news.
+          if (draft)
             stmts.push(
-              db
-                .prepare(
-                  "INSERT INTO submissions(id,identity,data,sender,created_at) SELECT ?,?,?,'Coleta automática',? WHERE NOT EXISTS(SELECT 1 FROM events WHERE identity=?) AND NOT EXISTS(SELECT 1 FROM submissions WHERE identity=?)",
-                )
-                .bind(
-                  crypto.randomUUID(),
-                  identity,
-                  JSON.stringify(draft),
-                  now(),
-                  identity,
-                  identity,
-                ),
+              source(db, draft.sourceUrl),
+              insert(
+                db,
+                "events",
+                { ...draft, verifiedAt: now().slice(0, 10) },
+                "coleta-automatica",
+              ),
             );
-          }
           const stale =
             c.published && Date.parse(c.published) < Date.now() - 21 * 86400000;
           stmts.push(
@@ -99,7 +86,7 @@ export async function maintenance(
                     ? "pending"
                     : "baseline"
                   : draft
-                    ? "drafted"
+                    ? "published"
                     : stale
                       ? "stale"
                       : "pending",

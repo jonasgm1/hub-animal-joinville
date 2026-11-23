@@ -6,7 +6,7 @@
     "url": "https://www.joinville.sc.gov.br/?post_type=noticia&s=feira+de+ado%C3%A7%C3%A3o",
     "termsUrl": "https://www.joinville.sc.gov.br/termo-de-uso-e-politica-de-privacidade/",
     "reviewedAt": "2026-11-20",
-    "scope": "Identificação de anúncios em títulos e links públicos. Conferência editorial antes de publicar."
+    "scope": "Identificação de anúncios em títulos e links públicos. Publicação automática só com dia, horário e endereço explícitos, com link para a notícia."
   },
   {
     "id": "pmj-castracao",
@@ -24,7 +24,7 @@
     "url": "https://www.joinville.sc.gov.br/?post_type=noticia&s=ado%C3%A7%C3%A3o+cbea",
     "termsUrl": "https://www.joinville.sc.gov.br/termo-de-uso-e-politica-de-privacidade/",
     "reviewedAt": "2026-11-23",
-    "scope": "Identificação de anúncios em títulos e links públicos. Conferência editorial antes de publicar."
+    "scope": "Identificação de anúncios em títulos e links públicos. Publicação automática só com dia, horário e endereço explícitos, com link para a notícia."
   },
   {
     "id": "pmj-noticias-castracao",
@@ -33,6 +33,6 @@
     "url": "https://www.joinville.sc.gov.br/?post_type=noticia&s=castra%C3%A7%C3%A3o",
     "termsUrl": "https://www.joinville.sc.gov.br/termo-de-uso-e-politica-de-privacidade/",
     "reviewedAt": "2026-11-23",
-    "scope": "Identificação de anúncios em títulos e links públicos. Conferência editorial antes de publicar."
+    "scope": "Identificação de anúncios em títulos e links públicos. Publicação automática só com dia, horário e endereço explícitos, com link para a notícia."
   }
 ]
