@@ -1,8 +1,10 @@
 export default function Brand() {
   return (
     <a className="brand" href="/">
-      <img src="/brand.svg" alt="" width="40" height="40" />
-      Hub Animal Joinville
+      <img src="/plates/brand-mark.webp" alt="" width="400" height="352" />
+      <span className="brand-name">
+        <span>Hub Animal</span> <span>Joinville</span>
+      </span>
     </a>
   );
 }

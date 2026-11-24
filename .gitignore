@@ -11,3 +11,8 @@ playwright-report/
 *.sqlite*
 __pycache__/
 *.pyc
+.impeccable/archive/
+.impeccable/build/
+.impeccable/review/
+.impeccable/mocks/
+.impeccable/hook.cache.json

@@ -9,7 +9,7 @@ const securityHeaders = {
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
   "Content-Security-Policy":
-    "default-src 'none'; base-uri 'none'; img-src 'self' data:; style-src 'self'; form-action 'self'; frame-ancestors 'none'",
+    "default-src 'none'; base-uri 'none'; img-src 'self' data:; font-src 'self'; style-src 'self'; form-action 'self'; frame-ancestors 'none'",
 };
 function html(v: View, url: URL, status = 200) {
   const canonical = esc(url.origin + url.pathname),
@@ -65,6 +65,17 @@ export async function handle(req: Request, env: Env): Promise<Response> {
     if (compiled.assets[path]) {
       const a = compiled.assets[path];
       return textResponse(a.body, a.type);
+    }
+    if (/^\/(fonts|plates)\/[\w.-]+$/.test(path) && env.ASSETS) {
+      const file = await env.ASSETS.fetch(req);
+      if (!file.ok) throw new Problem(404, "Página não encontrada.");
+      return new Response(file.body, {
+        headers: {
+          ...securityHeaders,
+          "Content-Type": file.headers.get("Content-Type") || "",
+          "Cache-Control": "public, max-age=604800",
+        },
+      });
     }
     if (env.PUBLIC_ORIGIN) url.host = new URL(env.PUBLIC_ORIGIN).host;
     if (path === "/robots.txt")

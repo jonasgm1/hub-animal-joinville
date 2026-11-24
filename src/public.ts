@@ -74,25 +74,28 @@ const choices = (items: string[]) => items.map((x) => [x, x]);
 function serviceList(services: Entry[]) {
   return `<ul class="list">${services
     .map(
-      (e) => `<li class="row"><div class="meta">${esc(e.category)}</div>
-    <h3>${link(href("services", e), e.title)}</h3><p>${esc(e.description)}</p>
-    <div class="row-info">${tag(costs[e.cost || ""])}<span class="meta">${esc(e.audience)}</span></div></li>`,
+      (e) => `<li class="tag-entry row"><h3>${link(href("services", e), e.title)}</h3><p>${esc(e.description)}</p>
+    <div class="row-info">${tag(costs[e.cost || ""])}<span class="meta">${esc([e.category, e.audience].filter(Boolean).join(" · "))}</span></div></li>`,
     )
     .join("")}</ul>`;
 }
-function eventList(events: Entry[]) {
-  return `<ul class="list">${events
+const stamp = (iso: string) => {
+  const d = new Date(iso);
+  return `<time class="stamp" datetime="${esc(iso)}">${esc(day.format(d) + " " + month.format(d).replace(".", ""))}</time>`;
+};
+function eventList(events: Entry[], compact = false) {
+  return `<ul class="${compact ? "tags" : "list"}">${events
     .map((e) => {
-      const start = new Date(e.start!),
-        end = new Date(e.end!);
+      const title = `<h3>${link(href("events", e), e.title)}</h3>`;
+      if (compact)
+        return `<li class="tag-entry fair">${stamp(e.start!)}<div class="fair-text line">${title} <p class="place">${esc(e.location?.split(",")[0])}</p></div></li>`;
       const endText =
         dateLabel(e.start!) === dateLabel(e.end!)
-          ? clock.format(end)
+          ? clock.format(new Date(e.end!))
           : dateLabel(e.end!, true);
-      return `<li class="row event-row"><div class="calendar-day" aria-hidden="true"><b>${esc(day.format(start))}</b><span>${esc(month.format(start).replace(".", ""))}</span></div>
-      <div><p class="meta">${esc(e.type)}</p><h3>${link(href("events", e), e.title)}</h3>
-      <p><time datetime="${esc(e.start)}">${esc(dateLabel(e.start!, true))}</time> até <time datetime="${esc(e.end)}">${esc(endText)}</time></p>
-      <p class="meta">${esc(e.location)}</p></div></li>`;
+      return `<li class="tag-entry fair">${stamp(e.start!)}<div class="fair-text">${title}
+      <p class="when"><time datetime="${esc(e.start)}">${esc(dateLabel(e.start!, true))}</time> até <time datetime="${esc(e.end)}">${esc(endText)}</time></p>
+      <p class="where">${esc([e.type, e.location].filter(Boolean).join(" · "))}</p></div></li>`;
     })
     .join("")}</ul>`;
 }
@@ -110,25 +113,27 @@ async function home(db: D1Database): Promise<PublicView> {
     ...new Map([...preferred, ...services].map((e) => [e.slug, e])).values(),
   ].slice(0, 3);
   const urgent = [
-    "socorro-animal-de-rua",
-    "socorro-animal-silvestre",
-    "denunciar-maus-tratos",
-  ]
-    .map(find)
-    .filter((e): e is Entry => !!e);
+    ["socorro-animal-de-rua", "Socorro a animal ferido"],
+    ["denunciar-maus-tratos", "Denúncia de maus-tratos"],
+  ].map(([slug, label]) => {
+    const e = find(slug);
+    return link(e ? href("services", e) : "/servicos", label);
+  });
+  const next = events.slice(0, 2);
   return {
     title: "Proteção animal em Joinville",
     description:
       "Encontre serviços de proteção animal, contatos oficiais, feiras de adoção e organizações de Joinville, Santa Catarina.",
-    body: `<div class="hero"><section class="finder"><p class="eyebrow">Proteção animal · Joinville, SC</p><h1>De que ajuda seu animal precisa?</h1>
-      <p>Encontre o serviço, confira quem pode solicitar e fale diretamente com quem atende.</p>
-      <form class="searchbar" action="/servicos" role="search"><label><span class="sr-only">Buscar serviços</span><input type="search" name="q" placeholder="Ex.: castração, resgate, adoção" maxlength="200"></label><button>Buscar</button></form></section>
-      <aside class="urgent"><h2>Precisa de ajuda agora?</h2><p>Escolha a situação para ver o canal e o horário de atendimento.</p>
-      <ul>${urgent.map((e) => `<li>${link(href("services", e), e.title)}</li>`).join("") || '<li><a href="/servicos">Consultar o diretório</a></li>'}</ul></aside></div>
+    body: `<div class="home"><img class="hero-plate" src="/plates/hero.webp" alt="Pintura de um cão caramelo e um gato rajado olhando para cima" width="1536" height="1024" fetchpriority="high">
+      <section class="finder" aria-labelledby="pergunta"><h1 id="pergunta">De que ajuda seu animal precisa?</h1>
+      <form class="searchtag" action="/servicos" role="search"><img class="twine twine-search" src="/plates/twine-search.webp" alt="" width="260" height="807"><label><span class="sr-only">Buscar serviços</span><input type="search" name="q" placeholder="castração, resgate, adoção" maxlength="200"></label><button>Buscar</button></form>
+      <nav class="urgent" aria-label="Ajuda urgente">${urgent.join("")}</nav></section>
+      <section class="fairs" aria-labelledby="feiras"><h2 id="feiras">Próximas feiras</h2>
+      ${next.length ? eventList(next, true).replace('<li class="tag-entry fair">', '<li class="tag-entry fair">' + (next.length === 2 ? '<img class="twine twine-fairs" src="/plates/twine-fairs.webp" alt="" width="280" height="807">' : "")) : `<ul class="tags"><li class="tag-entry">${empty("Nenhum evento confirmado para as próximas datas.")}</li></ul>`}
+      <p class="more">${link("/agenda", "Ver agenda completa")}</p></section>
       <section class="home-block">${sectionHeading("Encontrar por assunto")}<ul class="categories">${categories.map((c) => `<li>${link(c === "Feiras e campanhas" ? "/agenda" : "/servicos?categoria=" + encodeURIComponent(c), c)}</li>`).join("")}</ul></section>
-      <div class="columns"><section>${sectionHeading("Serviços em destaque", link("/servicos", "Ver todos os serviços"))}${featured.length ? serviceList(featured) : empty("Nenhum serviço verificado até o momento.")}</section>
-      <section>${sectionHeading("Próximas feiras e campanhas", link("/agenda", "Ver agenda"))}${events.length ? eventList(events.slice(0, 3)) : empty("Nenhum evento confirmado para as próximas datas.")}</section></div>
-      <section class="community"><h2>Quem atua em Joinville</h2><p>Consulte órgãos públicos, ONGs e grupos voluntários, com seus projetos e contatos divulgados.</p>${link("/organizacoes", "Conhecer as organizações")} · ${link("/sobre", "Sobre o projeto")}${castrationGuide}</section>`,
+      <section class="home-block">${sectionHeading("Serviços em destaque", link("/servicos", "Ver todos os serviços"))}${featured.length ? serviceList(featured) : empty("Nenhum serviço verificado até o momento.")}</section>
+      <section class="community"><h2>Quem atua em Joinville</h2><p>Consulte órgãos públicos, ONGs e grupos voluntários, com seus projetos e contatos divulgados.</p><p>${link("/organizacoes", "Conhecer as organizações")} · ${link("/sobre", "Sobre o projeto")}</p>${castrationGuide}</section></div>`,
   };
 }
 
@@ -193,7 +198,7 @@ async function organizationsView(db: D1Database): Promise<PublicView> {
     title: "Diretório de organizações",
     body: `${pageHeading("Organizações", "ONGs, grupos voluntários e órgãos públicos que atuam na proteção animal em Joinville.")}
     <section>${sectionHeading(entries.length === 1 ? "1 organização" : entries.length + " organizações")}
-    ${entries.length ? `<ul class="list">${entries.map((e) => `<li class="row"><div class="meta">${esc(e.area || "")}</div><h3>${link(href("organizations", e), e.title)}</h3><p>${esc(e.description)}</p></li>`).join("")}</ul>` : empty("Nenhuma organização verificada até o momento.")}</section>`,
+    ${entries.length ? `<ul class="list">${entries.map((e) => `<li class="tag-entry row"><h3>${link(href("organizations", e), e.title)}</h3><p>${esc(e.description)}</p>${e.area ? `<p class="meta">${esc(e.area)}</p>` : ""}</li>`).join("")}</ul>` : empty("Nenhuma organização verificada até o momento.")}</section>`,
   };
 }
 
@@ -249,7 +254,7 @@ function contactDetails(e: Entry, table: Table) {
     ),
   ].join("");
   return fields
-    ? `<section class="contact-box"><h2>Contatos e atendimento</h2><dl>${fields}</dl></section>`
+    ? `<section class="contact-box tag-entry"><h2>Contatos e atendimento</h2><dl>${fields}</dl></section>`
     : "";
 }
 function evidence(e: Entry) {
@@ -259,7 +264,7 @@ function evidence(e: Entry) {
       ? "Fonte consultada · Gratuidade sem confirmação"
       : "Informações conferidas na fonte";
   const host = safeUrl(e.sourceUrl) ? new URL(e.sourceUrl).hostname : "";
-  return `<section class="evidence"><h2>Fonte e verificação</h2><p>${tag(status)}</p>
+  return `<section class="evidence tag-entry"><h2>Fonte e verificação</h2><p>${tag(status)}</p>
     <p>${e.automatic ? "Coletado em" : "Última verificação em"} <time datetime="${esc(e.verifiedAt)}">${esc(dateLabel(e.verifiedAt))}</time>.</p>
     ${host ? `<p>${link(e.sourceUrl, "Consultar publicação original em " + host)}</p>` : ""}</section>`;
 }
@@ -289,14 +294,14 @@ async function detail(
   const org: Entry | null =
     orgRow?.status === "published" ? JSON.parse(orgRow.data) : null;
   let body = `<nav class="crumb" aria-label="Caminho da página">${link("/", "Início")} / ${link("/" + paths[t], sectionNames[t])}</nav>
-    <article class="detail"><header class="page-head"><p class="eyebrow">${esc(e.category || e.type || e.area || sectionNames[t])}</p><h1>${esc(e.title)}</h1><p>${esc(e.description)}</p></header>`;
+    <article class="detail"><header class="page-head"><h1>${esc(e.title)}</h1><p>${esc(e.description)}</p><p class="row-info">${tag(e.category || e.type || e.area || sectionNames[t])}${t === "services" ? tag(costs[e.cost || ""]) : ""}</p></header>`;
   const page: PublicView = {
     title: e.title,
     description: e.description,
     body: "",
   };
   if (t === "services") {
-    body += `<p>${tag(costs[e.cost || ""])}</p>${paragraph("Quem pode solicitar", e.eligibility)}${paragraph("Como solicitar", e.steps)}
+    body += `${paragraph("Quem pode solicitar", e.eligibility)}${paragraph("Como solicitar", e.steps)}
       ${contactDetails(e, t)}${paragraph("Documentos e informações", e.documents)}
       <dl>${term("Espécies", esc(e.species?.join(", ") || ""))}${term("Responsável", org ? link(href("organizations", org), org.title) : "")}</dl>${e.category === "Castração" ? castrationGuide : ""}`;
   } else if (t === "events") {

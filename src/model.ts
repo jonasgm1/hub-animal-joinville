@@ -73,6 +73,7 @@ export interface Row {
 export interface Env {
   DB: D1Database;
   PUBLIC_ORIGIN?: string;
+  ASSETS?: Fetcher;
 }
 export class Problem extends Error {
   constructor(
