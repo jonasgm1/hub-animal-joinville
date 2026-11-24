@@ -2,7 +2,7 @@
 
 The world: a gouache painting on a cobalt ground, with aged-paper exhibition tags hung on jute twine. It reads like a hand-made notice board at an adoption fair, not a SaaS directory.
 
-## Palette (blue predominates; no pink, purple or flowers)
+## Colors (blue predominates; no pink, purple or flowers)
 
 | Token | Hex | Use |
 |---|---|---|
@@ -15,7 +15,7 @@ The world: a gouache painting on a cobalt ground, with aged-paper exhibition tag
 | rust | `#a1250a` | date stamps and cost labels on paper |
 | mist | `#dbe7ff` | secondary text on cobalt |
 
-## Type
+## Typography
 
 Source Serif 4 (self-hosted, 400 / 400 italic / 600 / 700). Headlines 700 with tight leading (.86–.94) and slight negative tracking; metadata in italic. No second family.
 
@@ -23,9 +23,9 @@ Source Serif 4 (self-hosted, 400 / 400 italic / 600 / 700). Headlines 700 with t
 
 - Fluid comp units: `--cu: min(100cqi / 1024, 1px)` on `body { container-type: inline-size }`. Every size is `calc(N * var(--cu))` with a `max()` floor, so the 1024 comp scales down to phones and caps at 1024 on desktop.
 - `@container (width < 600px)` stacks the nav and drops the hero overlap.
-- Lists are paper tags: `.tag-entry` uses nine-slice `border-image` from `public/plates/fair-tag-{1,2}.webp` (eyelet kept whole in the top slice, middle band mirror-tiled), alternating the two plates.
+- Lists are paper tags: `.tag-entry` uses nine-slice `border-image` from `public/plates/fair-tag-1.webp` and `public/plates/fair-tag-2.webp` (eyelet kept whole in the top slice, middle band mirror-tiled), alternating the two plates.
 
-## Signature details
+## Components
 
 - Rust rubber-stamp dates (`.stamp`): rotated, stretched, speckled with an SVG turbulence mask.
 - Ochre brush button with turbulence streaks.
